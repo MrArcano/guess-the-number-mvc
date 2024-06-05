@@ -47,25 +47,30 @@ public class Game {
         return nRand;
     }
 
-    public void startGame(){
+    public void startGame(Difficulty difficulty){
+
         // setting field
-        usedAttempts = 0;
         minNumber = 1;
+        usedAttempts = 0;
+        maxAttempts = difficulty.getMaxAttempts();
         remaingAttempts = maxAttempts;
+
+        System.out.println("Numero massimo: " + maxNumber);
+        System.out.println("Tentativi massimi: " + maxAttempts);
 
         // Genero un valore random tra 1 e nMax
         Random random = new Random();
         nRand = random.nextInt(maxNumber) + 1;
-        System.out.println(nRand); //debug
+        System.out.println("Numero casuale: " + nRand); //debug
 
     }
 
     public Result checkRandomNumberMatch(int value){
         // se hai finito i tentativi o hai già trovato il numero, non fare nulla
-        if (remaingAttempts == 0 || checkNumber == nRand) return Result.tentativiFiniti;
+        if (remaingAttempts == 0 || checkNumber == nRand) return Result.ATTEMPTS_OVER;
 
         // controllo che il valore sia differente da quello precedente
-        if(checkNumber == value) return Result.numeroRipetuto;
+        if(checkNumber == value) return Result.NUMBER_REPEATED;
 
         // salvo il nuovo valore
         checkNumber = value;
@@ -77,20 +82,20 @@ public class Game {
         // troppo alto
         if (checkNumber > nRand) {
             maxNumber = checkNumber;
-            return Result.troppoAlto;
+            return Result.TOO_HIGH;
         }
 
         // troppo basso
         if (checkNumber < nRand) {
             minNumber = checkNumber;
-            return Result.troppoBasso;
+            return Result.TOO_LOW;
         }
 
         // controllo se hai vinto o perso
         if (checkNumber == nRand) {
-            return Result.vinto; // vinto
+            return Result.WIN; // vinto
         } else if (remaingAttempts == 0) {
-            return Result.perso; // perso
+            return Result.LOSE; // perso
         }
 
       return null;

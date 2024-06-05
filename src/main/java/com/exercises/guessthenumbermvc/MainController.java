@@ -5,9 +5,9 @@
 package com.exercises.guessthenumbermvc;
 
 import java.net.URL;
-import java.util.Random;
 import java.util.ResourceBundle;
 
+import com.exercises.guessthenumbermvc.model.Difficulty;
 import com.exercises.guessthenumbermvc.model.Game;
 import com.exercises.guessthenumbermvc.model.Result;
 import javafx.event.ActionEvent;
@@ -61,6 +61,9 @@ public class MainController {
     @FXML // fx:id="lblAssistMode"
     private Label lblAssistMode; // Value injected by FXMLLoader
 
+    @FXML
+    private ComboBox<Difficulty.Level> selectDifficulty;
+
     private Game model;
 
     @FXML
@@ -77,21 +80,24 @@ public class MainController {
         // Prendo il numero massimo
         try {
             model.setMaxNumber(Integer.parseInt(nMax.getText()));
-        } catch (NumberFormatException e) {
+            if(model.getMaxNumber() <= 1) throw new IllegalArgumentException();
+        } catch (IllegalArgumentException e) {
             errorNMax.setText("Errore inserimento!");
             return;
         }
 
         // Prendo il numero massimo di tentativi
-        try {
-            model.setMaxAttempts(Integer.parseInt(tMax.getText()));
-        } catch (NumberFormatException e) {
-            errorTMax.setText("Errore inserimento!");
-            return;
-        }
+//        try {
+//            model.setMaxAttempts(Integer.parseInt(tMax.getText()));
+//        } catch (NumberFormatException e) {
+//            errorTMax.setText("Errore inserimento!");
+//            return;
+//        }
+
+        Difficulty difficulty = new Difficulty(selectDifficulty.getValue(), model.getMaxNumber());
 
         // avvio il gioco
-        model.startGame();
+        model.startGame(difficulty);
 
         // mostro il range possibile
         lblAssistMode.setText(model.getMinNumber() + " < NUMERO < " + model.getMaxNumber());
@@ -125,27 +131,27 @@ public class MainController {
         // aggiorno i tentativi rimanenti
         lblT.setText("Tentativi rimanenti: " + model.getRemaingAttempts());
 
-        switch (result){
-            case Result.tentativiFiniti: // ho finito i tentativi vincendo o perdendo
+        switch (result) {
+            case Result.ATTEMPTS_OVER: // ho finito i tentativi vincendo o perdendo
                 messageArea.appendText("Gioco finito, inizia una nuova partita!\n");
                 pBarT.setProgress(1);
                 lblT.setText("Tentativi finiti");
                 break;
-            case Result.numeroRipetuto: // ripetizione ultimo numero
+            case Result.NUMBER_REPEATED: // ripetizione ultimo numero
                 errorNTest.setText("Errore ripetizione!");
                 break;
-            case Result.troppoAlto: // troppo alto
-                messageArea.appendText("T"+ model.getUsedAttempts()  +": Il numero " + model.getCheckNumber() + " è troppo ALTO!\n");
+            case Result.TOO_HIGH: // troppo alto
+                messageArea.appendText("T" + model.getUsedAttempts() + ": Il numero " + model.getCheckNumber() + " è troppo ALTO!\n");
                 break;
-            case Result.troppoBasso: // troppo basso
-                messageArea.appendText("T"+ model.getUsedAttempts()  +": Il numero " + model.getCheckNumber() + " è troppo BASSO!\n");
+            case Result.TOO_LOW: // troppo basso
+                messageArea.appendText("T" + model.getUsedAttempts() + ": Il numero " + model.getCheckNumber() + " è troppo BASSO!\n");
                 break;
-            case Result.vinto: // vinto
+            case Result.WIN: // vinto
                 messageArea.appendText("Hai vinto. Il numero era: " + model.getnRand() + "\n");
                 pBarT.setProgress(1);
                 lblT.setText("Tentativi finiti");
                 break;
-            case Result.perso: // perso
+            case Result.LOSE: // perso
                 messageArea.appendText("Hai perso. Il numero era: " + model.getnRand() + "\n");
                 lblT.setText("Tentativi finiti");
                 break;
@@ -158,13 +164,24 @@ public class MainController {
         lblAssistMode.setVisible(flagAssistMode.isSelected());
     }
 
-    public void setModel(Game model){
+    public void setModel(Game model) {
         this.model = model;
     }
 
     @FXML
         // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
+
+        // Aggiungo le opzioni alla ComboBox
+        selectDifficulty.getItems().add(Difficulty.Level.EASY);
+        selectDifficulty.getItems().add(Difficulty.Level.MEDIUM);
+        selectDifficulty.getItems().add(Difficulty.Level.HARD);
+
+        // Seleziono EASY come opzione predefinita
+        selectDifficulty.setValue(Difficulty.Level.EASY);
+
+        lblAssistMode.setVisible(false);
+
         assert btnCheck != null : "fx:id=\"btnCheck\" was not injected: check your FXML file 'main-view.fxml'.";
         assert btnStartGame != null : "fx:id=\"btnStartGame\" was not injected: check your FXML file 'main-view.fxml'.";
         assert lblT != null : "fx:id=\"lblT\" was not injected: check your FXML file 'main-view.fxml'.";

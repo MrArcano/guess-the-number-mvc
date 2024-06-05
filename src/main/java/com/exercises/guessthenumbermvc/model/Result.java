@@ -1,10 +1,10 @@
 package com.exercises.guessthenumbermvc.model;
 
 public enum Result {
-    troppoAlto,
-    troppoBasso,
-    tentativiFiniti,
-    vinto,
-    perso,
-    numeroRipetuto
+    TOO_HIGH,
+    TOO_LOW,
+    ATTEMPTS_OVER,
+    WIN,
+    LOSE,
+    NUMBER_REPEATED
 }
