@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.ResourceBundle;
 
 import com.exercises.guessthenumbermvc.model.Game;
+import com.exercises.guessthenumbermvc.model.Result;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -104,7 +105,7 @@ public class MainController {
         // resetto la scritta di errore
         errorNTest.setText("");
 
-        int result = 0;
+        Result result;
         try {
             result = model.checkRandomNumberMatch(Integer.parseInt(nTest.getText()));
         } catch (NumberFormatException e) {
@@ -125,30 +126,29 @@ public class MainController {
         lblT.setText("Tentativi rimanenti: " + model.getRemaingAttempts());
 
         switch (result){
-            case 0: // ho finito i tentativi vincendo o perdendo
+            case Result.tentativiFiniti: // ho finito i tentativi vincendo o perdendo
                 messageArea.appendText("Gioco finito, inizia una nuova partita!\n");
                 pBarT.setProgress(1);
                 lblT.setText("Tentativi finiti");
                 break;
-            case 1: // ripetizione ultimo numero
+            case Result.numeroRipetuto: // ripetizione ultimo numero
                 errorNTest.setText("Errore ripetizione!");
                 break;
-            case 2: // troppo alto
+            case Result.troppoAlto: // troppo alto
                 messageArea.appendText("T"+ model.getUsedAttempts()  +": Il numero " + model.getCheckNumber() + " è troppo ALTO!\n");
                 break;
-            case 3: // troppo basso
+            case Result.troppoBasso: // troppo basso
                 messageArea.appendText("T"+ model.getUsedAttempts()  +": Il numero " + model.getCheckNumber() + " è troppo BASSO!\n");
                 break;
-            case 4: // vinto
+            case Result.vinto: // vinto
                 messageArea.appendText("Hai vinto. Il numero era: " + model.getnRand() + "\n");
                 pBarT.setProgress(1);
                 lblT.setText("Tentativi finiti");
                 break;
-            case 5: // perso
+            case Result.perso: // perso
                 messageArea.appendText("Hai perso. Il numero era: " + model.getnRand() + "\n");
                 lblT.setText("Tentativi finiti");
                 break;
-
         }
 
     }

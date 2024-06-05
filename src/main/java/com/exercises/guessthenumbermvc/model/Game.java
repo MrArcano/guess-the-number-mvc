@@ -60,14 +60,12 @@ public class Game {
 
     }
 
-    public int checkRandomNumberMatch(int value){
+    public Result checkRandomNumberMatch(int value){
         // se hai finito i tentativi o hai già trovato il numero, non fare nulla
-        if (remaingAttempts == 0 || checkNumber == nRand) return 0;
-
-        System.out.println("dopo controllo vinto o perso");
+        if (remaingAttempts == 0 || checkNumber == nRand) return Result.tentativiFiniti;
 
         // controllo che il valore sia differente da quello precedente
-        if(checkNumber == value) return 1;
+        if(checkNumber == value) return Result.numeroRipetuto;
 
         // salvo il nuovo valore
         checkNumber = value;
@@ -79,22 +77,22 @@ public class Game {
         // troppo alto
         if (checkNumber > nRand) {
             maxNumber = checkNumber;
-            return 2;
+            return Result.troppoAlto;
         }
 
         // troppo basso
         if (checkNumber < nRand) {
             minNumber = checkNumber;
-            return 3;
+            return Result.troppoBasso;
         }
 
         // controllo se hai vinto o perso
         if (checkNumber == nRand) {
-            return 4; // vinto
+            return Result.vinto; // vinto
         } else if (remaingAttempts == 0) {
-            return 5; // perso
+            return Result.perso; // perso
         }
 
-      return 0;
+      return null;
     }
 }
